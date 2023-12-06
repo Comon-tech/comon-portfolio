@@ -1,0 +1,42 @@
+name: Create Portfolio
+
+on:
+  push:
+    paths:
+      - 'portfolio-names.txt'
+
+jobs:
+  create-portfolio:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '14'
+
+    - name: Install Dependencies
+      run: npm install
+
+    - name: Create Repository
+      run: |
+        # Extract portfolio name from portfolio-names.txt
+        PORTFOLIO_NAME=$(cat portfolio-names.txt)
+
+        # Use GitHub API to create a new repository for the user
+        curl -u "your-username:$GITHUB_TOKEN" -d '{"name": "'$PORTFOLIO_NAME'"}' https://api.github.com/user/repos
+
+        # Add React.js template or any other content as needed
+        # ...
+
+    - name: Commit and Push Changes
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+
+        git add .
+        git commit -m "Add portfolio for $PORTFOLIO_NAME"
+        git push
